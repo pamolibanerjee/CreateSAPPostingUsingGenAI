@@ -1,0 +1,68 @@
+{
+    "VCAP_SERVICES": {
+        "destination": [
+            {
+                "name": "sfouronprem-dest",
+                "instance_name": "sfouronprem-dest",
+                "label": "destination",
+                "tags": [
+                    "destination",
+                    "conn",
+                    "connsvc",
+                    "endpoint:https://api.cf.us10-001.hana.ondemand.com",
+                    "org:fa93f79etrial",
+                    "space:dev"
+                ],
+                "plan": "lite",
+                "credentials": {
+                    "clientid": "sb-cloned9a493f537734dfb9a5c465ffb09f52b!b339995|destination-xsappname!b62",
+                    "clientsecret": "bd886817-c7e2-474d-bc2c-8b23b73ac53d$_aUgXjrmCLbXBWPjSqAOIGg79gOpt5Ca6zjVwN77rB8=",
+                    "credential-type": "binding-secret",
+                    "identityzone": "fa93f79etrial",
+                    "instanceid": "d9a493f5-3773-4dfb-9a5c-465ffb09f52b",
+                    "service_key_name": "key",
+                    "tenantid": "809deb8f-2fa2-49d7-b34f-2265ecc83ff8",
+                    "tenantmode": "dedicated",
+                    "uaadomain": "authentication.us10.hana.ondemand.com",
+                    "uri": "https://destination-configuration.cfapps.us10.hana.ondemand.com",
+                    "url": "https://fa93f79etrial.authentication.us10.hana.ondemand.com",
+                    "verificationkey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwktUW8ycTu8qGQlVEeR3\niq1wT2M6ed0MbZVcoOqk7RKGarZzOwqg15LPfavOu0pUock++0hDaNmoAzB5jWnC\nORx7O1j+uyLwX50aZkPBc/cNKqWtrB6WsJ9TFfqDT9KgMMHNd9k04ylUX7lLWyfT\niUKJ32AjRMu0lsNh+OPinBDMRaDUs6Ure2nt1oNch7QMIZkbl7h8kFzqU6xZYtLq\n4UNfSFtdFur+Gn6I05XaMu6BiMsb8b7aK3F7G33f0jIZJikMsqTXYxwh23Vi1W8Q\npS3yljURiJdbbZyXilf2CsIyA0UAFW3GpEQObWZ9E0dQ9hGMz35oqiRRtvRpkdEF\nKQIDAQAB\n-----END PUBLIC KEY-----",
+                    "xsappname": "cloned9a493f537734dfb9a5c465ffb09f52b!b339995|destination-xsappname!b62"
+                }
+            }
+        ],
+        "xsuaa": [
+            {
+                "name": "create-so-from-chat-xsuaa-service",
+                "instance_name": "create-so-from-chat-xsuaa-service",
+                "label": "xsuaa",
+                "tags": [
+                    "xsuaa",
+                    "endpoint:https://api.cf.us10-001.hana.ondemand.com",
+                    "org:fa93f79etrial",
+                    "space:dev"
+                ],
+                "plan": "application",
+                "credentials": {
+                    "apiurl": "https://api.authentication.us10.hana.ondemand.com",
+                    "clientid": "sb-create-so-from-chat-xsappname!t339995",
+                    "clientsecret": "c2779baf-05c3-4ce3-a5c4-1296826fa1c1$LAhlZiKcktz2WRyWIBtEn_LIOZq115UNAPgzromorRY=",
+                    "credential-type": "binding-secret",
+                    "identityzone": "fa93f79etrial",
+                    "identityzoneid": "809deb8f-2fa2-49d7-b34f-2265ecc83ff8",
+                    "sburl": "https://internal-xsuaa.authentication.us10.hana.ondemand.com",
+                    "serviceInstanceId": "2b563581-d647-438e-93d3-d8e836036f8d",
+                    "service_key_name": "key",
+                    "subaccountid": "809deb8f-2fa2-49d7-b34f-2265ecc83ff8",
+                    "tenantid": "809deb8f-2fa2-49d7-b34f-2265ecc83ff8",
+                    "tenantmode": "dedicated",
+                    "uaadomain": "authentication.us10.hana.ondemand.com",
+                    "url": "https://fa93f79etrial.authentication.us10.hana.ondemand.com",
+                    "verificationkey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwktUW8ycTu8qGQlVEeR3\niq1wT2M6ed0MbZVcoOqk7RKGarZzOwqg15LPfavOu0pUock++0hDaNmoAzB5jWnC\nORx7O1j+uyLwX50aZkPBc/cNKqWtrB6WsJ9TFfqDT9KgMMHNd9k04ylUX7lLWyfT\niUKJ32AjRMu0lsNh+OPinBDMRaDUs6Ure2nt1oNch7QMIZkbl7h8kFzqU6xZYtLq\n4UNfSFtdFur+Gn6I05XaMu6BiMsb8b7aK3F7G33f0jIZJikMsqTXYxwh23Vi1W8Q\npS3yljURiJdbbZyXilf2CsIyA0UAFW3GpEQObWZ9E0dQ9hGMz35oqiRRtvRpkdEF\nKQIDAQAB\n-----END PUBLIC KEY-----",
+                    "xsappname": "create-so-from-chat-xsappname!t339995",
+                    "zoneid": "809deb8f-2fa2-49d7-b34f-2265ecc83ff8"
+                }
+            }
+        ]
+    }
+}

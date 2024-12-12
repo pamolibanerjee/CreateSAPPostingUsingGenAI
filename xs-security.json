@@ -1,0 +1,14 @@
+{
+  "xsappname": "rag-cap-llm",
+  "tenant-mode": "dedicated",
+  "scopes": [],
+  "attributes": [],
+  "role-templates": [],
+  "oauth2-configuration": {
+    "credential-types": ["binding-secret", "x509"],
+    "redirect-uris": [
+      "https://*.hana.ondemand.com/**",
+      "https://*.applicationstudio.cloud.sap/**"
+    ]
+  }
+}
