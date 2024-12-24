@@ -275,7 +275,7 @@ module.exports = function () {
       console.log('Error while Processing Image', error.message);
       throw error;
     }
-    return "Embeddings stored successfully!";
+//    return "Embeddings stored successfully!";
 
   })
 

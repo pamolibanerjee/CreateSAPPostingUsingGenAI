@@ -138,7 +138,7 @@ sap.ui.define([
                     success: function (body, status, response) {
                         console.log(response);
                         if (response.status === 200 || response.status === 201) {
-                            resolve(response.responseJSON.content);
+                            resolve(response.responseJSON);
                         } else {
                             reject(response.responseJSON)
                         }
@@ -164,19 +164,18 @@ sap.ui.define([
             var json_data;
             const chatModel = this.getView().getModel('chatModel');
             const conversationId = chatModel.getProperty("/conversationId");
-            if (oReturn) {
-                json_data = JSON.parse(oReturn)
-            }
+            // if (oReturn) {
+            //     json_data = JSON.parse(oReturn)
+            // }
             const backendResponse = {
                 conversationId: conversationId,
                 messageId: self.crypto.randomUUID(),
-                //                message_time: new Date(oReturn.messageTime),
+                message_time: new Date(oReturn.messageTime),
                 content: oReturn.content,
                 user_id: "",
                 user_role: oReturn.role,
                 icon_path: "sap-icon://da-2",
                 initials: "",
-                json_data: json_data
             }
 
             const path = "/chatHistory";

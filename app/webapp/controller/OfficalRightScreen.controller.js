@@ -91,7 +91,9 @@ sap.ui.define([
 
         loadConversationHistory(conversationID) {
 
-            const url = this.getBaseURL() + `/odata/v4/chat/Conversation(${conversationID})/to_messages`;
+//            const url = this.getBaseURL() + `/odata/v4/chat/Conversation(${conversationID})/to_messages`;
+            const url = sessionStorage.getItem("isDeployedVersion") === "true" ? this.getBaseURL() + `/odata/v4/chat/Conversation(${conversationID})/to_messages` : `/odata/v4/chat/Conversation(${conversationID})/to_messages`;
+
             var oModel = new JSONModel();
             oModel.loadData(url);
             oModel.dataLoaded()
@@ -138,8 +140,8 @@ sap.ui.define([
 
             this.setUserQuestionInToChatMessage(userMessage);
 
-            var oModel_jsonmodel = sap.ui.getCore().getModel('oModel_JSON');
-            var JSON_DATA = JSON.stringify(oModel_jsonmodel.getData());
+            // var oModel_jsonmodel = sap.ui.getCore().getModel('oModel_JSON');
+            // var JSON_DATA = JSON.stringify(oModel_jsonmodel.getData());
 
             const chatModel = this.getView().getModel('chatModel');
             const conversationId = chatModel.getProperty("/conversationId");
@@ -149,7 +151,7 @@ sap.ui.define([
                 message_time: chatModel.getProperty("/message_time"),
                 user_id: chatModel.getProperty("/user_id"),
                 user_query: chatModel.getProperty("/user_query"),
-                json_data: JSON_DATA
+//                json_data: JSON_DATA
             });
 
             this.sendMessage(payload)
@@ -247,19 +249,19 @@ sap.ui.define([
 
             const chatModel = this.getView().getModel('chatModel');
             const conversationId = chatModel.getProperty("/conversationId");
-            if (oReturn) {
-                JSON_DATA = JSON.parse(oReturn)
-            };
+            // if (oReturn) {
+            //     JSON_DATA = JSON.parse(oReturn)
+            // };
             const backendResponse = {
                 conversationId: conversationId,
                 messageId: self.crypto.randomUUID(),
                 //                message_time: new Date(oReturn.messageTime),
-                content: oReturn.content,
+                content: oReturn,
                 user_id: "",
-                user_role: oReturn.role,
+                user_role: 'assistant',
                 icon_path: "sap-icon://da-2",
                 initials: "",
-                JSON_DATA: JSON_DATA
+//                JSON_DATA: JSON_DATA
             }
 
             const path = "/chatHistory";

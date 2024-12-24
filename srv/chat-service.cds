@@ -12,16 +12,7 @@ service ChatService @(requires: 'authenticated-user') {
         where: 'userID = $user'
     }])            as projection on db.Conversation;
 
-//    entity Conversation as projection on db.Conversation;
-
     entity Message as projection on db.Message;
-
-    // type RagResponse_AdditionalContents {
-
-    //     score       : String;
-    //     pageContent : String;
-    // }
-
     type ChatResponse {
         role               : String;
         content            : String;

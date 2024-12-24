@@ -10,7 +10,7 @@ function getCurrentTimestamp() {
 }
 
 // Helper method to insert the messages and update the latest conversation timestamp in db
-async function insertMessage(messageEntity, messageRecord, conversationId, conversationEntity, messageTime , json_data) {
+async function insertMessage(messageEntity, messageRecord, conversationId, conversationEntity, messageTime) {
 
     console.log(`Inserting new message for conversation id: ${conversationId}`);
     const messageInsertionStatus = await INSERT.into(messageEntity).entries([messageRecord]);
@@ -26,7 +26,7 @@ async function insertMessage(messageEntity, messageRecord, conversationId, conve
 }
 
 // Helper method to handle conversation memory in HANA CLoud before RAG LLM call.
-async function storeRetrieveMessages(conversationId, messageId, message_time, user_id, user_query, Conversation, Message, modelName , json_data) {
+async function storeRetrieveMessages(conversationId, messageId, message_time, user_id, user_query, Conversation, Message, modelName) {
     try {
 
         let memoryContext = [];
@@ -70,7 +70,6 @@ async function storeRetrieveMessages(conversationId, messageId, message_time, us
                 "creation_time": currentTimestamp,
                 "last_update_time": currentTimestamp,
                 "title": user_query,
-                "json_data": json_data
             };
             const conversationInsertStatus = await INSERT.into(Conversation).entries([conversationEntry]);
             if (!conversationInsertStatus) { 
@@ -84,15 +83,10 @@ async function storeRetrieveMessages(conversationId, messageId, message_time, us
             "mID": messageId,
             "role": "user",
             "content": user_query,
-            "creation_time": message_time,
-            "json_data" : json_data
+            "creation_time": message_time
         };
 
-        await insertMessage(Message, messageRecord, conversationId, Conversation, message_time, json_data);
-        memoryContext.push({
-            "role": Message.role,
-            "content": Message.content
-        });
+        await insertMessage(Message, messageRecord, conversationId, Conversation, message_time);
         return memoryContext;
     }
 

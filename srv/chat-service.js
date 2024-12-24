@@ -3,6 +3,7 @@
 const cds = require('@sap/cds');
 const { DELETE } = cds.ql;
 const { storeRetrieveMessages, storeModelResponse } = require('./memory-helper');
+const { executeHttpRequest } = require('@sap-cloud-sdk/http-client');
 
 
 // const tableName = 'SAP_TISCE_DEMO_DOCUMENTCHUNK';
@@ -18,117 +19,106 @@ module.exports = function () {
     this.on('getChatResponse', async (req) => {
         try {
             //request input data
-            const { conversationId, messageId, message_time, user_id, user_query, json_data } = req.data;
+            const { conversationId, messageId, message_time, user_id, user_query } = req.data;
             const { Conversation, Message } = this.entities;
-            const capllmplugin = await cds.connect.to("cap-llm-plugin");
             const s4opS06 = await cds.connect.to('API_SUPPLIERINVOICE_PROCESS_SRV');
+            //            const capllmplugin = await cds.connect.to("cap-llm-plugin");
             console.log("***********************************************************************************************\n");
-            console.log(`Received the request the user query : ${user_query}\n`);
-
-            // Input string
-            let str = user_query;
-            console.log(str)
-
-            // Using match with regEx
-            let matches = str.match(/(\d+)/);
-
-            // Display output if number extracted
-            if (matches) {
-                console.log(matches[0]);
-            }
-            try {
-                const InvoiceGetRes = await s4opS06.send({
-                  method: 'GET',
-                  path: `/A_SupplierInvoice(SupplierInvoice=${matches[0]},FiscalYear='2024')/to_SupplierInvoiceItemGLAcct`,
-//                  data: postData,
-                })
-        
-               return InvoiceGetRes;
-        
-              } catch (error) {
-                console.log(error.message)
-              } 
-            //set the modeName you want
-            //            const chatModelName = "gpt-4o";
-            //            let result = user_query.toUpperCase().includes("JSON", 1);
-
-            //             if (result === true){
-            //                   //build the response payload for the frontend.
-            //                const response = {
-            // //                "role": chatCompletionResponse.role,
-            //                 "content": json_data,
-            // //                "messageTime": responseTimestamp,
-            // //                "additionalContents": chatRagResponse.additionalContents,
-            //                };
-            //                  //Optional. handle memory before the RAG LLM call
-            //                const memoryContext = await storeRetrieveMessages(conversationId, messageId, message_time, user_id, user_query, Conversation, Message, chatModelName , json_data);
-
-            //                return response;
-            //             }
+            console.log(`Received the request for the user query : ${user_query}\n`);
             /*
             For this sample use case we show how you can leverage the gpt model. However, you can easily customize this code to use any models supported by CAP LLM Plugin.
             Chat Model:  gpt-4 
             Embedding Model: text-embedding-ada-002
             */
 
+            //set the modeName you want
+            const chatModelName = "gpt-4";
+            const embeddingModelName = "text-embedding-ada-002";
 
-            //            const embeddingModelName = "text-embedding-ada-002";
-
-            //            console.log(`Leveraing the Chat Model:  gpt-4o `);
+            console.log("");
             //Optional. handle memory before the RAG LLM call
-            const memoryContext = await storeRetrieveMessages(conversationId, messageId, message_time, user_id, user_query, Conversation, Message, chatModelName, json_data);
+            const memoryContext = await storeRetrieveMessages(conversationId, messageId, message_time, user_id, user_query, Conversation, Message, chatModelName);
 
             //Obtain the model configs configured in package.json
-            // const chatModelConfig = cds.env.requires["gen-ai-hub"][chatModelName];
-            // const embeddingModelConfig = cds.env.requires["gen-ai-hub"][embeddingModelName];
+            const chatModelConfig = cds.env.requires["gen-ai-hub"][chatModelName];
+            const embeddingModelConfig = cds.env.requires["gen-ai-hub"][embeddingModelName];
 
-            /*Some models require you to pass few mandatory chat params, please check the respective model documentation to pass those params in the 'charParams' parameter. 
-            For example, AWS anthropic models requires few mandatory parameters such as anthropic_version and max_tokens, the you will need to pass those parameters in the 'chatParams' parameter of getRagResponseWithConfig(). 
-            */
+            //Populate Get call for the User Query
+            // Using match with regEx
+            let matches = user_query.match(/(\d+)/);
 
-            /*Single method to perform the following :
-            - Embed the input query
-            - Perform similarity search based on the user query 
-            - Construct the prompt based on the system instruction and similarity search
-            - Call chat completion model to retrieve relevant answer to the user query
-            */
-            console.log("Getting the response !");
+            // Display output if number extracted
+            if (matches) {
+                const inv = matches[0];
+                try {
+                    const InvoiceGetRes = await s4opS06.send({
+                      method: 'GET',
+                      path: `/A_SupplierInvoice(SupplierInvoice='${inv}',FiscalYear='2024')/to_SupplierInvoiceItemGLAcct`,
+                    })
 
-            // const chatRagResponse = await capllmplugin.getRagResponseWithConfig(
-            //     user_query,  //user query
-            //     tableName,   //table name containing the embeddings
-            //     embeddingColumn, //column in the table containing the vector embeddings
-            //     contentColumn, //  column in the table containing the actual content
-            //     systemPrompt, // system prompt for the task
-            //     embeddingModelConfig, //embedding model config
-            //     chatModelConfig, //chat model config
-            //     memoryContext.length > 0 ? memoryContext : undefined, //Optional.conversation memory context to be used.
-            //     5  //Optional. topK similarity search results to be fetched. Defaults to 5
-            // );
+                    var apiResponse = JSON.stringify(InvoiceGetRes);
+                    let determinationPayload = [{
+                        "role": "system",
+                        //        "content" : `${systemPrompt}`
+                        "content": "You are are helpful assistant"
+                      }];
+                
+                      const ticks = "```";
+                      const json = "json";
+                      const userQuestion = [
+                        {
+                          "role": "user",
+                          "content":
+                            [
+                              {
+                                "type": "text",
+                                "text": `Convert this string ${apiResponse} into meaningful JSON format. 
+                                           Remove any ${ticks} or ${json} or empty values.Just do what is asked ,do not say any extra words`
+                              }
+                            ]
+                        }
+                      ]
+                      determinationPayload.push(...userQuestion);
+                      let payload = {
+                        "messages": determinationPayload,
+                        //        "max_tokens": 100, 
+                        "stream": false
+                      };
 
+                      const httpResponse = await executeHttpRequest({ destinationName: 'GENERATIVE_AI_HUB' },
+                        {
+                          url: '/v2/inference/deployments/d03c85df13ec9a7a/chat/completions?api-version=2023-05-15',
+                          method: 'post',
+                          data: payload,
+                          headers: { 'AI-Resource-Group': 'default' }
+                        },
+                        { fetchCsrfToken: false }
+                      );
+                      var formattedAPIresponse = httpResponse.data.choices[0].message.content;
+            
+                  } catch (error) {
+                    console.log(error.message)
+                  }
+            }
             //parse the response object according to the respective model for your use case. For instance, lets consider the following three models.
-            // let chatCompletionResponse = null;
-            // if (chatModelName === "gpt-4") {
-            //     chatCompletionResponse =
-            //     {
-            //         "role": chatRagResponse.completion.choices[0].message.role,
-            //         "content": chatRagResponse.completion.choices[0].message.content
-            //     }
-            // }
-            // //Optional. parse other model outputs if you choose to use a different model.
-            // else {
-            //     throw new Error("The model supported in this application is 'gpt-4'. Please customize this application to use any model supported by CAP LLM Plugin. Please make the customization by referring to the comments.")
-            // }
+            let chatCompletionResponse = null;
+
+            chatCompletionResponse =
+            {
+                "role": "assistant",
+                "content": formattedAPIresponse //apiResponse
+            }
+
             //Optional. handle memory after the RAG LLM call
             const responseTimestamp = new Date().toISOString();
             await storeModelResponse(conversationId, responseTimestamp, chatCompletionResponse, Message, Conversation);
 
             //build the response payload for the frontend.
             const response = {
-                "role": chatCompletionResponse.role,
+                "role": 'assistant',
                 "content": chatCompletionResponse.content,
                 "messageTime": responseTimestamp,
-                "additionalContents": chatRagResponse.additionalContents,
+                //                "additionalContents": chatRagResponse.additionalContents,
             };
 
             return response;
