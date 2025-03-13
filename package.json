@@ -71,9 +71,9 @@
         },
         "gpt-4o": {
           "destinationName": "GenAIHubDestination",
-          "deploymentUrl": "/v2/inference/deployments/d03c85df13ec9a7a",
+          "deploymentUrl": "/v2/inference/deployments/d2fedcfd169a1bf8",
           "resourceGroup": "default",
-          "apiVersion": "2024-05-13",
+          "apiVersion": "2024-05-15",
           "modelName": "gpt-4o"
         },
         "text-embedding-ada-002": {
@@ -88,6 +88,13 @@
         "kind": "rest",
         "credentials": {
           "destination": "GENERATIVE_AI_HUB",
+          "requestTimeout": "30000000"
+        }
+      },
+      "AzureOpenAI": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "AZURE_OPEN_AI",
           "requestTimeout": "30000000"
         }
       },

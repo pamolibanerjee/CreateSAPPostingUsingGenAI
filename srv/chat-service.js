@@ -72,7 +72,7 @@ module.exports = function () {
                             [
                               {
                                 "type": "text",
-                                "text": `Convert this string ${apiResponse} into meaningful JSON format. 
+                                "text": `Structure this API response ${apiResponse} into a simple format . 
                                            Remove any ${ticks} or ${json} or empty values.Just do what is asked ,do not say any extra words`
                               }
                             ]
@@ -99,6 +99,46 @@ module.exports = function () {
                   } catch (error) {
                     console.log(error.message)
                   }
+            } else
+            {
+              //Just pass the user question to LLM as is
+              let determinationPayload = [{
+                "role": "system",
+                //        "content" : `${systemPrompt}`
+                "content": "You are are helpful assistant"
+              }];
+        
+              const ticks = "```";
+              const json = "json";
+              const userQuestion = [
+                {
+                  "role": "user",
+                  "content":
+                    [
+                      {
+                        "type": "text",
+                        "text": user_query
+                      }
+                    ]
+                }
+              ]
+              determinationPayload.push(...userQuestion);
+              let payload = {
+                "messages": determinationPayload,
+                //        "max_tokens": 100, 
+                "stream": false
+              };
+
+              const httpResponse = await executeHttpRequest({ destinationName: 'GENERATIVE_AI_HUB' },
+                {
+                  url: '/v2/inference/deployments/d03c85df13ec9a7a/chat/completions?api-version=2023-05-15',
+                  method: 'post',
+                  data: payload,
+                  headers: { 'AI-Resource-Group': 'default' }
+                },
+                { fetchCsrfToken: false }
+              );
+              var formattedAPIresponse = httpResponse.data.choices[0].message.content;
             }
             //parse the response object according to the respective model for your use case. For instance, lets consider the following three models.
             let chatCompletionResponse = null;

@@ -101,6 +101,7 @@ module.exports = function () {
       let textChunkEntries = [];
       //      const embeddingModelName = "text-embedding-ada-002";
       const s4opS06 = await cds.connect.to('API_SUPPLIERINVOICE_PROCESS_SRV');
+      //      const OPENAI_CORE_DESTINATION = await cds.connect.to('AzureOpenAI');
 
       // Check if document exists
       const isDocumentPresent = await SELECT.from(Files).where({ ID: uuid });
@@ -237,11 +238,12 @@ module.exports = function () {
         "stream": false
       };
 
-      //Do an executeHttpRequest call to consume the api
+      //      Do an executeHttpRequest call to consume the api SAP Generative AI Hub
 
       const httpResponse = await executeHttpRequest({ destinationName: 'GENERATIVE_AI_HUB' },
         {
-          url: '/v2/inference/deployments/d03c85df13ec9a7a/chat/completions?api-version=2023-05-15',
+          url: '/v2/inference/deployments/d2fedcfd169a1bf8/chat/completions?api-version=2024-10-21',
+          //          url: '/openai/deployments/d2fedcfd169a1bf8/completions?api-version=2024-10-21',
           method: 'post',
           data: payload,
           headers: { 'AI-Resource-Group': 'default' }
@@ -250,10 +252,41 @@ module.exports = function () {
 
       );
 
+      //define the API Version of the LLM model for Azure Open AI
+      // const API_VERSION = process.env["AI_CORE_API_VERSION"] || "2023-05-15";
+
+      // const AI_API_VERSION = "2023-03-15-preview"
+
+      // const apikey = "e32daeac193745a1886403a3553231ec";
+      // const headers = { "Content-Type": "application/json", "api-key": apikey };
+
+      // //connect to the Gen AI hub destination service  
+      // const aiCoreService = await cds.connect.to(AzureOpenAI);
+
+      // //Get embeddings fom Gen AI hub based on the prompt
+      // const texts = prompt;
+
+      // //Enter the deployment id associated to the embedding model
+      // const embedDeploymentIdOpenAI = "BE-TT-AVA-gpt4oEU";
+
+      //Provide the deployment id associated to sentiment defined in Gen AI hub.
+      // const sentimentDeploymentIdOpenAI =  "<Your DeploymenT ID>";
+
+      //prepare the input data to be sent to Gen AI hub model       
+      // const payloadembed  = {
+      //                 input: texts
+      //             };
+
+      //call Gen AI rest API via the desyination              
+      // const responseEmbed = await aiCoreService.send({
+      //   // @ts-ignore
+      //   query: `POST openai/deployments/${embedDeploymentIdOpenAI}/embeddings?api-version=${AI_API_VERSION}`,
+      //   data: payload,
+      //   headers: headers
+      // });
+
       const entitySupplierInv = s4opS06.entities.A_SupplierInvoice;
       const postData = JSON.parse(httpResponse.data.choices[0].message.content);
-
-
 
       try {
         const InvoicePostRes = await s4opS06.send({
@@ -275,7 +308,7 @@ module.exports = function () {
       console.log('Error while Processing Image', error.message);
       throw error;
     }
-//    return "Embeddings stored successfully!";
+    //    return "Embeddings stored successfully!";
 
   })
 
